@@ -29,9 +29,18 @@ let Timeschema=new mongoose.Schema({
 })
 let Gameuserschema=new mongoose.Schema({
   name:String,
-  num:Number
+  num:Number,
+  review:Array
 
 })
+
+let Gamereviewschema=new mongoose.Schema({
+  name:String,
+  
+  review:Object
+
+})
+
 let Metauserschema=new mongoose.Schema({
   name:String,
 
@@ -53,6 +62,7 @@ let Game=conn.model('Game', Gameschema);
 let Meta=conn.model('Meta', Metaschema);
 let Gameuser=conn.model('Gameuser', Gameuserschema);
 let Metauser=conn.model('Metauser', Metauserschema);
+let Gamereview=conn.model('Gamereview',Gamereviewschema);
 
 
 module.exports = {
@@ -61,6 +71,7 @@ module.exports = {
   Game:Game,
   Meta:Meta,
   Metauser:Metauser,
-  Gameuser:Gameuser
+  Gameuser:Gameuser,
+  Gamereview:Gamereview
 
 };
