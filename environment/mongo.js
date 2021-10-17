@@ -43,7 +43,15 @@ let Gamereviewschema=new mongoose.Schema({
 
 let Metauserschema=new mongoose.Schema({
   name:String,
-
+  
+  game_info:Object,
+  game_review:Array,
+  tv_info:Object,
+  tv_review:Array,
+  movie_info:Object,
+  movie_review:Array,
+  music_info:Object,
+  music_review:Array
 })
 let Metaschema=new mongoose.Schema({
   title:String,

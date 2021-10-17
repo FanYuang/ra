@@ -21,7 +21,7 @@ app.get('/getmetauser', (req, res) => {
                 doc.user_review.map(el => {
                     let obj = {};
                     obj.name = el.name;
-                    if (array.indexOf(el.name) == -1) {
+                    if (arr.indexOf(el.name) == -1) {
                         let data = new mongo.Metauser(obj);
                         data.save();
 
@@ -201,22 +201,216 @@ app.get("/getspot", (req, res) => {
         get(0 + i);
     res.send("ok");
 })
+app.get("/getmeta",(req,ress)=>{
+    function getgame(num) {
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+         
+            console.log("开始爬第"+num+"个" + doc.name);
+            axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=Game")
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let obj={};
+                    obj.positive= $('.score_distribution').find(".data").first().text();
+                    obj.mixed=$('.score_distribution').find(".score_count").last().prev().find(".data").text();
+                    obj.negative= $('.score_distribution').find(".data").last().text();
+                 
+                    obj.review_average=$('.userscore_summary').find('.summary_data').text();
+                    obj.highscore=$('.highest_review').find('.score_wrap').text();
+                    obj.hightitle=$('.highest_review').find('.product_title').text();
+                    obj.lowscore=$('.lowest_review').find('.score_wrap').text();
+                    obj.lowtitle=$('.lowest_review').find('.product_title').text();
+                    obj.num=$('.page_nav').find(".page_num").last().text();
+                    mongo.Metauser.updateOne({ name: doc.name }, { game_info: obj }).exec((res)=>{
+                            console.log("成功第"+num+"个" + doc.name);
+                            if (num < 163181)
+                            getgame(num + 2);
+                        })
+                   
+                })
+                .catch(function (error) {
+                    
+              
+                 
+                    console.log("卡住了" + num);
+                    if(!error.response)
+                    console.log(error);
+                    if (error.response&&error.response.status==404)
+                    getgame(num+2);
+                    else
+                    setTimeout(() => {
+                        getgame(num);
+                    }, 5000);
+                });
+        })
 
+    }
+
+    function gettv(num) {
+   
+            mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+  
+            console.log("开始爬第"+num+"个" + doc.name);
+            axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=TvShow")
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let obj={};
+                    obj.positive= $('.score_distribution').find(".data").first().text();
+                    obj.mixed=$('.score_distribution').find(".score_count").last().prev().find(".data").text();
+                    obj.negative= $('.score_distribution').find(".data").last().text();
+                 
+                    obj.review_average=$('.userscore_summary').find('.summary_data').text();
+                    obj.highscore=$('.highest_review').find('.score_wrap').text();
+                    obj.hightitle=$('.highest_review').find('.product_title').text();
+                    obj.lowscore=$('.lowest_review').find('.score_wrap').text();
+                    obj.lowtitle=$('.lowest_review').find('.product_title').text();
+                    obj.num=$('.page_nav').find(".page_num").last().text();
+
+                    mongo.Metauser.updateOne({ name: doc.name }, { tv_info: obj }).exec((res)=>{
+                        console.log("成功第"+num+"个" + doc.name);
+                        if (num < 163181)
+                        gettv(num + 2);
+                    })
+                    
+                })
+                .catch(function (error) {
+                    
+              
+                 
+                    console.log("卡住了" + num);
+                    if(!error.response)
+                    console.log(error);
+                    
+                    if (error.response&&error.response.status==404)
+                    gettv(num+2);
+                    else
+                    setTimeout(() => {
+                        gettv(num);
+                    }, 5000);
+                })
+            
+        })
+     
+    }
+
+    function getmovie(num) {
+      
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+           
+            console.log("开始爬第"+num+"个" + doc.name);
+            axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=Movie")
+                .then(function (res)
+                 {
+                    $ = cheerio.load(res.data);
+                    let obj={};
+                    obj.positive= $('.score_distribution').find(".data").first().text();
+                    obj.mixed=$('.score_distribution').find(".score_count").last().prev().find(".data").text();
+                    obj.negative= $('.score_distribution').find(".data").last().text();
+                 
+                    obj.review_average=$('.userscore_summary').find('.summary_data').text();
+                    obj.highscore=$('.highest_review').find('.score_wrap').text();
+                    obj.hightitle=$('.highest_review').find('.product_title').text();
+                    obj.lowscore=$('.lowest_review').find('.score_wrap').text();
+                    obj.lowtitle=$('.lowest_review').find('.product_title').text();
+                    obj.num=$('.page_nav').find(".page_num").last().text();
+
+       
+                    mongo.Metauser.updateOne({ name: doc.name }, { movie_info: obj }).exec((res)=>{
+                        console.log("成功第"+num+"个" + doc.name);
+                        if (num < 163181)
+                        getmovie(num + 2);
+                    })
+              
+                })
+                .catch(function (error) {
+                    
+              
+                 
+                    console.log("卡住了" + num);
+                    if(!error.response)
+                    console.log(error);
+                    if (error.response&&error.response.status==404)
+                    getmovie(num+2);
+
+                    else 
+                    setTimeout(() => {
+                        getmovie(num);
+                    }, 5000);
+                })
+        })
+    
+   
+    }
+
+    function getmusic(num) {
+        
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+  
+            console.log("开始爬第"+num+"个" + doc.name);
+            axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=Album")
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let obj={};
+                    obj.positive= $('.score_distribution').find(".data").first().text();
+                    obj.mixed=$('.score_distribution').find(".score_count").last().prev().find(".data").text();
+                    obj.negative= $('.score_distribution').find(".data").last().text();
+                 
+                    obj.review_average=$('.userscore_summary').find('.summary_data').text();
+                    obj.highscore=$('.highest_review').find('.score_wrap').text();
+                    obj.hightitle=$('.highest_review').find('.product_title').text();
+                    obj.lowscore=$('.lowest_review').find('.score_wrap').text();
+                    obj.lowtitle=$('.lowest_review').find('.product_title').text();
+                    obj.num=$('.page_nav').find(".page_num").last().text();
+
+                    mongo.Metauser.updateOne({ name: doc.name }, { music_info: obj }).exec((res)=>{
+                        console.log("成功第"+num+"个" + doc.name);
+                        if (num < 163181)
+                        getmusic(num + 2);
+                    })
+                    
+                })
+                .catch(function (error) {
+                    
+              
+                 
+                    console.log("卡住了" + num);
+                    if(!error.response)
+                    console.log(error);
+                    if (error.response&&error.response.status==404)
+                    getmusic(num+2);
+                    else 
+                    setTimeout(() => {
+                        getmusic(num);
+                    }, 5000);
+                });
+        })
+  
+    }
+    for (let i = 0; i < 2; i++)
+    {
+        getmovie(0 + i);
+        gettv(0 + i);
+        getmusic(0 + i);
+        getgame(0 + i);
+    
+  
+    }
+       
+    ress.send("ok");
+})
 app.get("/getgamereview", (req, res) => {
     function get(num) {
         mongo.Gameuser.findOne({}).skip(num).exec((err, doc) => {
-            if (doc)
-                console.log("开始操作：" + num + doc.name);
-            else
-                get(num + 10);
-
+           
+                
+           
 
 
             function getfull(i) {
                 let obj = {};
-
+                console.log("开始操作：" + num + doc.name+i);
                 obj.name = doc.name;
                 obj.review = doc.review[i];
+      
                 if (doc.review[i].url == null) {
                     let data = new mongo.Gamereview(obj);
                     data.save().then(
@@ -229,7 +423,7 @@ app.get("/getgamereview", (req, res) => {
                         }
                     );
                 }
-                else {
+                else{
                     function getreview(url) {
                         axios.get('https://www.gamespot.com' + url)
                             .then(function (res) {
@@ -258,8 +452,11 @@ app.get("/getgamereview", (req, res) => {
                 }
 
             }
-            if (doc.review)
+            if (doc.review&&doc&&doc.review.length>0)
                 getfull(0);
+            else 
+                get(num + 10);
+
 
 
 
