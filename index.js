@@ -220,11 +220,23 @@ app.get("/getmeta",(req,ress)=>{
                     obj.lowscore=$('.lowest_review').find('.score_wrap').text();
                     obj.lowtitle=$('.lowest_review').find('.product_title').text();
                     obj.num=$('.page_nav').find(".page_num").last().text();
-                    mongo.Metauser.updateOne({ name: doc.name }, { game_info: obj }).exec((res)=>{
-                            console.log("成功第"+num+"个" + doc.name);
-                            if (num < 163181)
-                            getgame(num + 2);
-                        })
+                    mongo.Metauser.updateOne({ name: doc.name }, { game_info: obj }).exec();
+                    Promise.all($(".review_content").map((i,el)=>{
+                   
+                            let object={};
+                            object.product_title=$(el).find(".product_title").text();
+                            object.product_score=$(el).find(".product_score").find(".data").text();
+                            object.date=$(el).find(".date").text();
+                            object.review_score=$(el).find(".review_score").text();
+                            object.body=$(el).find(".blurb_expanded").text();
+                            object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                            mongo.Metauser.updateOne({ name: doc.name }, {$push: { game_review: object } }).exec();
+
+                        })).then((res)=>{
+                            console.log("成功第"+num+"个" + doc.name);
+                            if (num < 163181)
+                            getgame(num + 2);
+                        })
                    
                 })
                 .catch(function (error) {
@@ -265,11 +277,23 @@ app.get("/getmeta",(req,ress)=>{
                     obj.lowtitle=$('.lowest_review').find('.product_title').text();
                     obj.num=$('.page_nav').find(".page_num").last().text();
 
-                    mongo.Metauser.updateOne({ name: doc.name }, { tv_info: obj }).exec((res)=>{
-                        console.log("成功第"+num+"个" + doc.name);
-                        if (num < 163181)
-                        gettv(num + 2);
-                    })
+                    mongo.Metauser.updateOne({ name: doc.name }, { tv_info: obj }).exec();
+                    Promise.all($(".review_content").map((i,el)=>{
+                   
+                                                    let object={};
+                                                    object.product_title=$(el).find(".product_title").text();
+                                                    object.product_score=$(el).find(".product_score").find(".data").text();
+                                                    object.date=$(el).find(".date").text();
+                                                    object.review_score=$(el).find(".review_score").text();
+                                                    object.body=$(el).find(".blurb_expanded").text();
+                                                    object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                                    mongo.Metauser.updateOne({ name: doc.name }, {$push: { tv_review: object } }).exec();
+                        
+                                                })).then((res)=>{
+                                                    console.log("成功第"+num+"个" + doc.name);
+                                                    if (num < 163181)
+                                                    gettv(num + 2);
+                                                })
                     
                 })
                 .catch(function (error) {
@@ -314,11 +338,23 @@ app.get("/getmeta",(req,ress)=>{
                     obj.num=$('.page_nav').find(".page_num").last().text();
 
        
-                    mongo.Metauser.updateOne({ name: doc.name }, { movie_info: obj }).exec((res)=>{
-                        console.log("成功第"+num+"个" + doc.name);
-                        if (num < 163181)
-                        getmovie(num + 2);
-                    })
+                    mongo.Metauser.updateOne({ name: doc.name }, { movie_info: obj }).exec();
+                    Promise.all($(".review_content").map((i,el)=>{
+                   
+                                                    let object={};
+                                                    object.product_title=$(el).find(".product_title").text();
+                                                    object.product_score=$(el).find(".product_score").find(".data").text();
+                                                    object.date=$(el).find(".date").text();
+                                                    object.review_score=$(el).find(".review_score").text();
+                                                    object.body=$(el).find(".blurb_expanded").text();
+                                                    object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                                    mongo.Metauser.updateOne({ name: doc.name }, {$push: { movie_review: object } }).exec();
+                        
+                                                })).then((res)=>{
+                                                    console.log("成功第"+num+"个" + doc.name);
+                                                    if (num < 163181)
+                                                    getmovie(num + 2);
+                                                })
               
                 })
                 .catch(function (error) {
@@ -361,11 +397,23 @@ app.get("/getmeta",(req,ress)=>{
                     obj.lowtitle=$('.lowest_review').find('.product_title').text();
                     obj.num=$('.page_nav').find(".page_num").last().text();
 
-                    mongo.Metauser.updateOne({ name: doc.name }, { music_info: obj }).exec((res)=>{
-                        console.log("成功第"+num+"个" + doc.name);
-                        if (num < 163181)
-                        getmusic(num + 2);
-                    })
+                    mongo.Metauser.updateOne({ name: doc.name }, { music_info: obj }).exec();
+                    Promise.all($(".review_content").map((i,el)=>{
+                   
+                                                    let object={};
+                                                    object.product_title=$(el).find(".product_title").text();
+                                                    object.product_score=$(el).find(".product_score").find(".data").text();
+                                                    object.date=$(el).find(".date").text();
+                                                    object.review_score=$(el).find(".review_score").text();
+                                                    object.body=$(el).find(".blurb_expanded").text();
+                                                    object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                                    mongo.Metauser.updateOne({ name: doc.name }, {$push: { music_review: object } }).exec();
+                        
+                                                })).then((res)=>{
+                                                    console.log("成功第"+num+"个" + doc.name);
+                                                    if (num < 163181)
+                                                    getmusic(num + 2);
+                                                })
                     
                 })
                 .catch(function (error) {
