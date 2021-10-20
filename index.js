@@ -445,6 +445,281 @@ app.get("/getmeta",(req,ress)=>{
        
     ress.send("ok");
 })
+
+app.get("/getmetareview",(req,ress)=>{
+    function getgame(num) {
+        
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+            console.log("开始爬第"+num+"个" + doc.name);
+
+            if (!doc.game_info||doc.game_info.num=="")
+            {
+                if (num < 163180)
+                getgame(num + 3);
+            }
+            else
+            {
+                let page_num=parseInt(doc.game_info.num);
+                function getpage(page)
+                {
+                axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=Game&page="+page)
+                    .then(function (res) {
+                        $ = cheerio.load(res.data);
+                       
+                      
+                        Promise.all($(".review_content").map((i,el)=>{
+                       
+                                let object={};
+                                object.product_title=$(el).find(".product_title").text();
+                                object.product_score=$(el).find(".product_score").find(".data").text();
+                                object.date=$(el).find(".date").text();
+                                object.review_score=$(el).find(".review_score").text();
+                                object.body=$(el).find(".blurb_expanded").text();
+                                object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                mongo.Metauser.updateOne({ name: doc.name }, {$push: { game_review: object } }).exec();
+    
+                            })).then((res)=>{
+                                console.log("成功第"+num+"个" + doc.name+"第"+page+"页");
+                                if(page<page_num-1)
+                                getpage(page+1); 
+                                if (num < 163180&&page==page_num-1)
+                                getgame(num + 3);
+                            })
+                       
+                    })
+                    .catch(function (error) {
+                        
+                  
+                     
+                        console.log("卡住了" + num);
+                        if(!error.response)
+                        console.log(error);
+                        if (error.response&&error.response.status==404&&page<page_num-1)
+                        getpage(page+1);
+                        else if(error.response&&error.response.status==404&&num < 163180&&page==page_num-1)
+                        {
+                            getgame(num+3);
+                        }
+                        else
+                        setTimeout(() => {
+                            getpage(page);
+                        }, 5000);
+                    });
+                }
+                getpage(1);
+            }
+            })
+            
+           
+
+    }
+
+    function getmovie(num) {
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+            console.log("开始爬第"+num+"个" + doc.name);
+            if (!doc.movie_info||doc.movie_info.num=="")
+            {
+                if (num < 163180)
+                getmovie(num + 3);
+            }
+            else
+            {
+                let page_num=parseInt(doc.movie_info.num);
+                function getpage(page)
+                {
+                axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=Movie&page="+page)
+                    .then(function (res) {
+                        $ = cheerio.load(res.data);
+                      
+                        Promise.all($(".review_content").map((i,el)=>{
+                       
+                                let object={};
+                                object.product_title=$(el).find(".product_title").text();
+                                object.product_score=$(el).find(".product_score").find(".data").text();
+                                object.date=$(el).find(".date").text();
+                                object.review_score=$(el).find(".review_score").text();
+                                object.body=$(el).find(".blurb_expanded").text();
+                                object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                mongo.Metauser.updateOne({ name: doc.name }, {$push: { movie_review: object } }).exec();
+    
+                            })).then((res)=>{
+                                console.log("成功第"+num+"个" + doc.name+"第"+page+"页");
+                                if(page<page_num-1)
+                                getpage(page+1); 
+                                if (num < 163180&&page==page_num-1)
+                                getmovie(num + 3);
+                            })
+                       
+                    })
+                    .catch(function (error) {
+                        
+                  
+                     
+                        console.log("卡住了" + num);
+                        if(!error.response)
+                        console.log(error);
+                        if (error.response&&error.response.status==404&&page<page_num-1)
+                        getpage(page+1);
+                        else if(error.response&&error.response.status==404&&num < 163180&&page==page_num-1)
+                        {
+                            getmovie(num+3);
+                        }
+                        else
+                        setTimeout(() => {
+                            getpage(page);
+                        }, 5000);
+                    });
+                }
+                getpage(1);
+            }
+            })
+            
+           
+
+    }
+
+    function gettv(num) {
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+            console.log("开始爬第"+num+"个" + doc.name);
+            if (!doc.tv_info||doc.tv_info.num=="")
+            {
+                if (num < 163180)
+                gettv(num + 3);
+            }
+            else
+            {
+                let page_num=parseInt(doc.tv_info.num);
+                function getpage(page)
+                {
+                axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=TvShow&page="+page)
+                    .then(function (res) {
+                        $ = cheerio.load(res.data);
+                      
+                        Promise.all($(".review_content").map((i,el)=>{
+                       
+                                let object={};
+                                object.product_title=$(el).find(".product_title").text();
+                                object.product_score=$(el).find(".product_score").find(".data").text();
+                                object.date=$(el).find(".date").text();
+                                object.review_score=$(el).find(".review_score").text();
+                                object.body=$(el).find(".blurb_expanded").text();
+                                object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                mongo.Metauser.updateOne({ name: doc.name }, {$push: { tv_review: object } }).exec();
+    
+                            })).then((res)=>{
+                                console.log("成功第"+num+"个" + doc.name+"第"+page+"页");
+                                if(page<page_num-1)
+                                getpage(page+1); 
+                                if (num < 163180&&page==page_num-1)
+                                gettv(num + 3);
+                            })
+                       
+                    })
+                    .catch(function (error) {
+                        
+                  
+                     
+                        console.log("卡住了" + num);
+                        if(!error.response)
+                        console.log(error);
+                        if (error.response&&error.response.status==404&&page<page_num-1)
+                        getpage(page+1);
+                        else if(error.response&&error.response.status==404&&num < 163180&&page==page_num-1)
+                        {
+                            gettv(num+3);
+                        }
+                        else
+                        setTimeout(() => {
+                            getpage(page);
+                        }, 5000);
+                    });
+                }
+                getpage(1);
+            }
+            })
+            
+           
+
+    }
+
+    function getmusic(num) {
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
+            console.log("开始爬第"+num+"个" + doc.name);
+            if (!doc.music_info||doc.music_info.num=="")
+            {
+                if (num < 163180)
+                getmusic(num + 3);
+            }
+            else
+            {
+                let page_num=parseInt(doc.music_info.num);
+                function getpage(page)
+                {
+                axios.get('https://www.metacritic.com/user/' + doc.name + "?myscore-filter=Album&page="+page)
+                    .then(function (res) {
+                        $ = cheerio.load(res.data);
+                      
+                        Promise.all($(".review_content").map((i,el)=>{
+                       
+                                let object={};
+                                object.product_title=$(el).find(".product_title").text();
+                                object.product_score=$(el).find(".product_score").find(".data").text();
+                                object.date=$(el).find(".date").text();
+                                object.review_score=$(el).find(".review_score").text();
+                                object.body=$(el).find(".blurb_expanded").text();
+                                object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                                mongo.Metauser.updateOne({ name: doc.name }, {$push: { music_review: object } }).exec();
+    
+                            })).then((res)=>{
+                                console.log("成功第"+num+"个" + doc.name+"第"+page+"页");
+                                if(page<page_num-1)
+                                getpage(page+1); 
+                                if (num < 163180&&page==page_num-1)
+                                getmusic(num + 3);
+                            })
+                       
+                    })
+                    .catch(function (error) {
+                        
+                  
+                     
+                        console.log("卡住了" + num);
+                        if(!error.response)
+                        console.log(error);
+                        if (error.response&&error.response.status==404&&page<page_num-1)
+                        getpage(page+1);
+                        else if(error.response&&error.response.status==404&&num < 163180&&page==page_num-1)
+                        {
+                            getmusic(num+3);
+                        }
+                        else
+                        setTimeout(() => {
+                            getpage(page);
+                        }, 5000);
+                    });
+                }
+                getpage(1);
+            }
+            })
+            
+           
+
+    }
+
+
+  
+    for (let i = 0; i < 3; i++)
+    {
+        getmovie(0 + i);
+        gettv(0 + i);
+        getmusic(0 + i);
+        getgame(0 + i);
+    
+  
+    }
+       
+    ress.send("ok");
+})
 app.get("/getgamereview", (req, res) => {
     function get(num) {
         mongo.Gameuser.findOne({}).skip(num).exec((err, doc) => {
