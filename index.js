@@ -795,7 +795,62 @@ app.get("/getgamereview", (req, res) => {
         get(0 + i);
     res.send("ok");
 })
+app.get("/getmetaformysql",(req,res)=>{
+    function get(num) {
+        mongo.Metauser.findOne({}).skip(num).exec((err, doc) => {
 
+            console.log("开始操作：" + num + doc.name);
+            if (doc && doc.game_review&& doc.game_review.length > 0)
+                doc.game_review.map(el => {
+                    let obj = {};
+                    obj= el;
+                    obj.name=doc.name;
+                    let data = new mongo.Metagame(obj);
+                    data.save();
+
+                
+
+                })
+                if (doc && doc.music_review&& doc.music_review.length > 0)
+                doc.music_review.map(el => {
+                    let obj = {};
+                    obj= el;
+                    obj.name=doc.name;
+                    let data = new mongo.Metamusic(obj);
+                    data.save();
+
+                
+
+                })
+                if (doc && doc.tv_review&& doc.tv_review.length > 0)
+                doc.tv_review.map(el => {
+                    let obj = {};
+                    obj= el;
+                    obj.name=doc.name;
+                    let data = new mongo.Metatv(obj);
+                    data.save();
+
+                
+
+                })
+                if (doc && doc.movie_review&& doc.movie_review.length > 0)
+                doc.movie_review.map(el => {
+                    let obj = {};
+                    obj= el;
+                    obj.name=doc.name;
+                    let data = new mongo.Metamovie(obj);
+                    data.save();
+
+                
+
+                })
+            if (num<163182)
+            get(num + 1);
+        })
+    }
+    get(0);
+    res.send("ok");
+})
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })

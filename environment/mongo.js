@@ -18,6 +18,17 @@ conn.on('err', (err) => {
 conn.on('close', () => {
   console.log('mongo disconnected!');
 })
+let Metareviewschema=new mongoose.Schema({
+  name:String,
+  product_title:String,
+  product_score:String,
+  date:String,
+  review_score:Number,
+
+  body:String,
+  helpful:String
+
+}) 
 
 let Timeschema=new mongoose.Schema({
     setuptime:Number,
@@ -71,7 +82,10 @@ let Meta=conn.model('Meta', Metaschema);
 let Gameuser=conn.model('Gameuser', Gameuserschema);
 let Metauser=conn.model('Metauser', Metauserschema);
 let Gamereview=conn.model('Gamereview',Gamereviewschema);
-
+let Metamusic=conn.model('Metamusic',Metareviewschema);
+let Metatv=conn.model('Metatv',Metareviewschema);
+let Metamovie=conn.model('Metamovie',Metareviewschema);
+let Metagame=conn.model('Metagame',Metareviewschema);
 
 module.exports = {
   conn: conn,
@@ -80,6 +94,9 @@ module.exports = {
   Meta:Meta,
   Metauser:Metauser,
   Gameuser:Gameuser,
-  Gamereview:Gamereview
-
+  Gamereview:Gamereview,
+  Metamusic:Metamusic,
+  Metamovie:Metamovie,
+  Metatv:Metatv,
+  Metagame:Metagame,
 };
