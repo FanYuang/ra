@@ -3,11 +3,17 @@ const mongoose = require('mongoose');
 const mongo = require('./environment/mongo');
 const axios = require('axios');
 var cheerio = require('cheerio');
+var _ = require('lodash');
 const app = express()
-const port = 3001
+const port = 3002
+
 let arr = [];
 let array = [];
-
+app.all('*', function(req, res, next) { res.header("Access-Control-Allow-Origin", "*"); 
+res.header("Access-Control-Allow-Headers", "X-Requested-With");
+ res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS"); 
+ res.header("X-Powered-By",' 3.2.1'); 
+ res.header("Content-Type", "application/json;charset=utf-8"); next(); });
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
@@ -37,6 +43,31 @@ app.get('/getmetauser', (req, res) => {
     get(0);
     res.send("ok");
 })
+
+app.get('/interview',(req,ress)=>{
+    
+    axios.get('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en')
+                .then(function (res) {
+                  console.log(res.data.humidity.data);
+                  console.log(res.data.temperature.data);
+                  let min=_.maxBy(res.data.temperature.data, function(o) { return o.value; });
+                  let max=_.minBy(res.data.temperature.data, function(o) { return o.value; });
+                  console.log(min,max);
+                  
+                  console.log(res.data.uvindex.data);
+                  ress.send({
+                      min_temp:min.value,
+                      max_temp:max.value,
+                      humidity:res.data.humidity.data[0].value,
+                      uvindex:res.data.uvindex.data[0].value
+                  })
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+    
+})
+
 app.get("/store", (req, res) => {
     arr = Array.from(new Set(arr));
     array = Array.from(new Set(array));
