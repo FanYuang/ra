@@ -76,6 +76,20 @@ let Gameschema=new mongoose.Schema({
 
 })
 
+let Spotschema=new mongoose.Schema({
+  name:String,
+  title:String,
+system:String,
+
+score:String,
+
+helpful:String,
+
+url:String,
+
+date:String,
+})
+
 let Time=conn.model('Time', Timeschema);
 let Game=conn.model('Game', Gameschema);
 let Meta=conn.model('Meta', Metaschema);
@@ -86,7 +100,11 @@ let Metamusic=conn.model('Metamusic',Metareviewschema);
 let Metatv=conn.model('Metatv',Metareviewschema);
 let Metamovie=conn.model('Metamovie',Metareviewschema);
 let Metagame=conn.model('Metagame',Metareviewschema);
-
+let Cleangame=conn.model('Cleangame',Metareviewschema);
+let Cleanmusic=conn.model('Cleanmusic',Metareviewschema);
+let Cleantv=conn.model('Cleantv',Metareviewschema);
+let Cleanmovie=conn.model('Cleanmovie',Metareviewschema);
+let Cleanspot=conn.model('Cleanspot',Spotschema);
 module.exports = {
   conn: conn,
   Time:Time,
@@ -99,4 +117,9 @@ module.exports = {
   Metamovie:Metamovie,
   Metatv:Metatv,
   Metagame:Metagame,
+  Cleangame:Cleangame,
+  Cleanmovie:Cleanmovie,
+  Cleantv:Cleantv,
+  Cleanmusic:Cleanmusic,
+  Cleanspot:Cleanspot
 };
