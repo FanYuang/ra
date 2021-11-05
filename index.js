@@ -19,6 +19,53 @@ app.all('*', function (req, res, next) {
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
+let gamedata=[];
+app.get("/storedata",(req,res)=>{
+    console.log(gamedata);
+    gamedata.map((el)=>{
+        let o=new mongo.Analysis(el);
+        o.save();
+    });
+    res.send('Hello World!')
+})
+var mongogame=[];
+let mongogame_1;
+        let mongogame_2;
+        let mongogame_3;
+        let mongogame_4;
+        let mongogame_5;
+
+        let mongogame_6;
+        let mongogame_7;
+        let mongogame_8;
+        let mongogame_9;
+        let mongogame_10;
+app.get('/getmongo',(req,res)=>{
+    function get(num) {
+        console.log(num);
+        mongo.Cleangame.find({}).exec((err, doc) => {
+        mongogame=doc;
+        
+         mongogame_1=doc.slice(0,43000);
+         mongogame_2=doc.slice(43000,86000);
+         mongogame_3=doc.slice(86000,43000*3);
+        mongogame_4=doc.slice(43000*3,43000*4);
+       mongogame_5=doc.slice(43000*4,43000*5);
+
+         mongogame_6=doc.slice(43000*5,43000*6);
+         mongogame_7=doc.slice(43000*6,43000*7);
+         mongogame_8=doc.slice(43000*7,43000*8);
+         mongogame_9=doc.slice(43000*8,43000*9);
+     mongogame_10=doc.slice(43000*9);
+
+        console.log(mongogame);
+        
+        })
+        
+    }
+    get(0);
+    res.send('ok');
+})
 
 app.get('/getmetauser', (req, res) => {
 
@@ -89,6 +136,466 @@ app.get("/store", (req, res) => {
     })
     res.send("ok");
 })
+
+
+app.get('/analysis',(req,res)=>{
+    let month=7;
+    let day=8;
+    let year=2020;
+
+    function getnext(obj){
+        let day=obj.day;
+        let month=obj.month;
+        let year=obj.year;
+        let next={};
+        if ((month==1||month==3||month==5||month==7||month==8||month==10)&&day==31)
+        {
+            next.month=month+1;
+            next.day=1;
+            next.year=year;
+        }
+        else if (month==12&&day==31)
+        {
+            next.month=1;
+            next.day=1;
+            next.year=year+1;
+        }
+        else if ((month==4||month==6||month==9||month==11)&&day==30)
+        {
+            next.month=month+1;
+            next.day=1;
+            next.year=year;
+        }
+
+        else if (month==2&&day==28&&year==2021)
+        {
+            next.month=month+1;
+            next.day=1;
+            next.year=year;
+        }
+        else if (month==2&&day==29&&year==2020)
+        {
+            next.month=month+1;
+            next.day=1;
+            next.year=year;
+        }
+        else 
+        {
+            next.month=month;
+            next.day=day+1;
+            next.year=year;
+        }
+        
+       
+        return next;
+         
+    }
+    function getdate(obj){
+        let day=obj.day;
+        let month=obj.month;
+        let year=obj.year;
+        let string="";
+        if (month==1)
+        {
+            string="Jan"
+        }
+        else if(month==2)
+        {
+            string="Feb"
+        }
+        else if(month==3)
+        {
+            string="Mar"
+        }
+        else if(month==4)
+        {
+            string="Apr"
+        }
+        else if(month==5)
+        {
+            string="May"
+        }
+        else if(month==6)
+        {
+            string="Jun"
+        }
+        else if(month==7)
+        {
+            string="Jul"
+        }
+        else if(month==8)
+        {
+            string="Aug"
+        }
+        else if(month==9)
+        {
+            string="Sep"
+        }
+        else if(month==10)
+        {
+            string="Oct"
+        }
+        else if(month==11)
+        {
+            string="Nov"
+        }
+        else if(month==12)
+        {
+            string="Dec"
+        }
+        if (day<10)
+        {
+            string=string+"  "+day.toString();
+        }
+        else
+        {
+            string=string+" "+day.toString();
+        }
+        string=string+", "+year.toString();
+        return string;
+    }
+    async function getlatermusic(year,month,day){
+
+        console.log("kaishi"+year+month+" "+day+"music");
+        let obj_1={};
+        obj_1.year=year;
+        obj_1.day=day;
+        obj_1.month=month;
+
+        let arr=[];
+
+        arr.push(obj_1);
+        let obj_2=getnext(obj_1);
+        arr.push(obj_2);
+        let obj_3=getnext(obj_2);
+        arr.push(obj_3);
+        let obj_4=getnext(obj_3);
+        arr.push(obj_4);
+        let obj_5=getnext(obj_4);
+        arr.push(obj_5);
+        let obj_6=getnext(obj_5);
+        arr.push(obj_6);
+        let obj_7=getnext(obj_6);
+        arr.push(obj_7);
+        let array=[];
+        await Promise.all(arr.map(async (el)=>{
+            let doc=await mongo.Cleanmusic.find({date:getdate(el)});
+            array=_.unionWith(array,doc,_.isEqual);
+           
+            return el;
+        })
+
+
+        );
+        
+        let startdate=year.toString()+"/"+month.toString()+"/"+day.toString();
+        let size=array.length;
+        if (size>0)
+        {
+        let group=_.groupBy(array,'name');
+        let mean_comment=size/Object.keys(group).length;
+        let score=Object.values(group).map((el)=>{
+            return _.meanBy(el,'review_score');
+
+        });
+        let mean_score=_.mean(score);
+        
+        let obj={};
+        obj.mean_score=mean_score;
+        obj.mean_comment=mean_comment;
+        obj.startdate=startdate;
+        obj.prop="music";
+        let data=new mongo.Analysis(obj);
+        data.save();
+        }
+        else{
+            let obj={};
+        obj.mean_score=0;
+        obj.mean_comment=0;
+        obj.startdate=startdate;
+        obj.prop="music";
+        let data=new mongo.Analysis(obj);
+        data.save();
+        }
+        let nweek=getnext(obj_7);
+       
+        if (year==2021&&month==7&&day>=8)
+        {
+            console.log("结束了");
+        }
+        else
+        getlatermusic(nweek.year,nweek.month,nweek.day);
+
+    }
+    async function getlatermovie(year,month,day){
+
+        console.log("kaishi"+year+month+" "+day+"movie");
+        let obj_1={};
+        obj_1.year=year;
+        obj_1.day=day;
+        obj_1.month=month;
+
+        let arr=[];
+
+        arr.push(obj_1);
+        let obj_2=getnext(obj_1);
+        arr.push(obj_2);
+        let obj_3=getnext(obj_2);
+        arr.push(obj_3);
+        let obj_4=getnext(obj_3);
+        arr.push(obj_4);
+        let obj_5=getnext(obj_4);
+        arr.push(obj_5);
+        let obj_6=getnext(obj_5);
+        arr.push(obj_6);
+        let obj_7=getnext(obj_6);
+        arr.push(obj_7);
+        let array=[];
+        await Promise.all(arr.map(async (el)=>{
+            let doc=await mongo.Cleanmovie.find({date:getdate(el)});
+            array=_.unionWith(array,doc,_.isEqual);
+          
+            return el;
+        })
+
+
+        );
+        
+        let startdate=year.toString()+"/"+month.toString()+"/"+day.toString();
+        let size=array.length;
+        if (size>0)
+        {
+        let group=_.groupBy(array,'name');
+        let mean_comment=size/Object.keys(group).length;
+        let score=Object.values(group).map((el)=>{
+            return _.meanBy(el,'review_score');
+
+        });
+        let mean_score=_.mean(score);
+        
+        let obj={};
+        obj.mean_score=mean_score;
+        obj.mean_comment=mean_comment;
+        obj.startdate=startdate;
+        obj.prop="movie";
+        let data=new mongo.Analysis(obj);
+        data.save();
+        }
+        else{
+            let obj={};
+        obj.mean_score=0;
+        obj.mean_comment=0;
+        obj.startdate=startdate;
+        obj.prop="movie";
+        let data=new mongo.Analysis(obj);
+        data.save();
+        }
+        let nweek=getnext(obj_7);
+       
+        if (year==2021&&month==7&&day>=8)
+        {
+            console.log("结束了");
+        }
+        else
+        getlatermovie(nweek.year,nweek.month,nweek.day);
+
+    }
+    async function getlatertv(year,month,day){
+
+        console.log("kaishi"+year+month+" "+day+"tv");
+        let obj_1={};
+        obj_1.year=year;
+        obj_1.day=day;
+        obj_1.month=month;
+
+        let arr=[];
+
+        arr.push(obj_1);
+        let obj_2=getnext(obj_1);
+        arr.push(obj_2);
+        let obj_3=getnext(obj_2);
+        arr.push(obj_3);
+        let obj_4=getnext(obj_3);
+        arr.push(obj_4);
+        let obj_5=getnext(obj_4);
+        arr.push(obj_5);
+        let obj_6=getnext(obj_5);
+        arr.push(obj_6);
+        let obj_7=getnext(obj_6);
+        arr.push(obj_7);
+        let array=[];
+        await Promise.all(arr.map(async (el)=>{
+            let doc=await mongo.Cleantv.find({date:getdate(el)});
+            array=_.unionWith(array,doc,_.isEqual);
+          
+            return el;
+        })
+
+
+        );
+        
+        let startdate=year.toString()+"/"+month.toString()+"/"+day.toString();
+        let size=array.length;
+        if (size>0)
+        {
+        let group=_.groupBy(array,'name');
+      
+        let mean_comment=size/Object.keys(group).length;
+       
+        
+        let score=Object.values(group).map((el)=>{
+            return _.meanBy(el,'review_score');
+
+        });
+        let mean_score=_.mean(score);
+        let obj={};
+        obj.mean_score=mean_score;
+        obj.mean_comment=mean_comment;
+        obj.startdate=startdate;
+        obj.prop="tv";
+        let data=new mongo.Analysis(obj);
+        data.save();
+        }
+        else
+        {
+            
+            let obj={};
+            obj.mean_score=0;
+            obj.mean_comment=0;
+            obj.startdate=startdate;
+            obj.prop="tv";
+            let data=new mongo.Analysis(obj);
+            data.save();
+        }
+       
+        let nweek=getnext(obj_7);
+        if (year==2021&&month==7&&day>=8)
+        {
+            console.log("结束了");
+        }
+        else
+        getlatertv(nweek.year,nweek.month,nweek.day);
+
+    }
+    async function getlatergame(year,month,day){
+
+        console.log("kaishi"+year+month+" "+day+"game");
+        let obj_1={};
+        obj_1.year=year;
+        obj_1.day=day;
+        obj_1.month=month;
+
+        let arr=[];
+
+        arr.push(obj_1);
+        let obj_2=getnext(obj_1);
+        arr.push(obj_2);
+        let obj_3=getnext(obj_2);
+        arr.push(obj_3);
+        let obj_4=getnext(obj_3);
+        arr.push(obj_4);
+        let obj_5=getnext(obj_4);
+        arr.push(obj_5);
+        let obj_6=getnext(obj_5);
+        arr.push(obj_6);
+        let obj_7=getnext(obj_6);
+        arr.push(obj_7);
+        let array=[];
+        await Promise.all(arr.map(async (el)=>{
+            let doc=_.filter(mongogame_1,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_2,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_3,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_4,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_5,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_6,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_7,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_8,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+             doc=_.filter(mongogame_9,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+            doc=_.filter(mongogame_9,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+             doc=_.filter(mongogame_10,{'date':getdate(el)})
+                
+            array=_.unionWith(array,doc,_.isEqual);
+
+
+                console.log(array.length);
+           
+            
+          
+            return el;
+        })
+
+
+        );
+ 
+        
+        let startdate=year.toString()+"/"+month.toString()+"/"+day.toString();
+        let size=array.length;
+        console.log(size);
+        if (size>0)
+        {
+        let group=_.groupBy(array,'name');
+        let mean_comment=size/Object.keys(group).length;
+        let score=Object.values(group).map((el)=>{
+            return _.meanBy(el,'review_score');
+
+        });
+        let mean_score=_.mean(score);
+        
+        let obj={};
+        obj.mean_score=mean_score;
+        obj.mean_comment=mean_comment;
+        obj.startdate=startdate;
+        obj.prop="game";
+        
+        gamedata.push(obj);
+        
+        }
+        else{
+            let obj={};
+        obj.mean_score=0;
+        obj.mean_comment=0;
+        obj.startdate=startdate;
+        obj.prop="game";
+
+        gamedata.push(obj);
+        }
+        let nweek=getnext(obj_7);
+        if (year==2021&&month==7&&day>=8)
+        {
+            console.log("结束了");
+        }
+        else
+        
+        getlatergame(nweek.year,nweek.month,nweek.day);
+
+    }
+    getlatergame(2019,7,3);
+    //getlatermovie(2019,7,3);
+    //getlatermusic(2019,7,3);
+    //getlatertv(2019,7,3);
+    res.send("ok");
+})
+
 app.get('/getgameuser', (req, res) => {
     function get(num) {
         mongo.Game.findOne({}).skip(num).exec((err, doc) => {
@@ -113,7 +620,166 @@ app.get('/getgameuser', (req, res) => {
     get(0);
     res.send("ok");
 })
+app.get('/dshi',(req,res)=>{
+    
+    function get(num) {
+        console.log(num);
+        mongo.Cleanshi.findOne({}).skip(num).exec((err, doc) => {
+           if (num<42001)
+           {
+            let data = new mongo.Cleana(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 42000)
+                get(num + 1);
+            });
+           }
+           else if (num>42000&&num<84001)
+           {
+            let data = new mongo.Cleanb(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 84000)
+                get(num + 1);
+            });
+           }
+           else if (num>84000&&num<127754)
+           {
+            let data = new mongo.Cleanc(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 127754)
+                get(num + 1);
+            });
+           }
+        })
+    }
+    
+    
+    get(0);
+    get(42001);
+    get(84001);
+    res.send("ok");
+})
+app.get('/dyi',(req,res)=>{
+    
+    function get(num) {
+        console.log(num);
+        mongo.Cleanshi.findOne({}).skip(num).exec((err, doc) => {
+           if (num<43001)
+           {
+            let data = new mongo.Cleand(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 43000)
+                get(num + 1);
+            });
+           }
+           
+           else if (num>43000&&num<86488)
+           {
+            let data = new mongo.Cleanc(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 86488)
+                get(num + 1);
+            });
+           }
+        })
+    }
+    
+    
+    get(0);
+    get(43001);
 
+    res.send("ok");
+})
+app.get("/diverse",(req,res)=>{
+    function get(num) {
+        console.log(num);
+        mongo.Cleangame.findOne({}).skip(num).exec((err, doc) => {
+           if (doc.review_score<=1)
+           {
+            let data = new mongo.Cleanyi(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=2)
+           {
+            let data = new mongo.Cleaner(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=3)
+           {
+            let data = new mongo.Cleansan(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=4)
+           {
+            let data = new mongo.Cleansi(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=5)
+           {
+            let data = new mongo.Cleanwu(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=6)
+           {
+            let data = new mongo.Cleanliu(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=7)
+           {
+            let data = new mongo.Cleanqi(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=8)
+           {
+            let data = new mongo.Cleanba(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=9)
+           {
+            let data = new mongo.Cleanjiu(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                get(num + 1);
+            });
+           }
+           else if(doc.review_score<=10)
+           {
+            let data = new mongo.Cleanshi(_.omit(doc, ['_id']));
+            data.save().then(() => {
+                if (num < 429297)
+                    get(num + 1);
+            });
+           }
+        })
+    
+        
+    }
+    get(0);
+    res.send("ok");
+})
 app.get("/getgame", (req, res) => {
 
     function get(num) {
