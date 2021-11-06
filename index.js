@@ -589,10 +589,10 @@ app.get('/analysis',(req,res)=>{
         getlatergame(nweek.year,nweek.month,nweek.day);
 
     }
-    getlatergame(2019,7,3);
-    //getlatermovie(2019,7,3);
-    //getlatermusic(2019,7,3);
-    //getlatertv(2019,7,3);
+    //getlatergame(2019,7,3);
+    getlatermovie(2019,7,3);
+    getlatermusic(2019,7,3);
+    getlatertv(2019,7,3);
     res.send("ok");
 })
 
