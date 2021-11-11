@@ -596,6 +596,8 @@ app.get('/analysis',(req,res)=>{
     res.send("ok");
 })
 
+
+
 app.get('/getgameuser', (req, res) => {
     function get(num) {
         mongo.Game.findOne({}).skip(num).exec((err, doc) => {
