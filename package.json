@@ -13,6 +13,8 @@
     "cheerio": "^1.0.0-rc.10",
     "express": "^4.17.1",
     "lodash": "^4.17.21",
-    "mongoose": "^6.0.10"
+    "mongoose": "^6.0.10",
+    "nodemon": "^2.0.20",
+    "twitter-tokens": "^1.0.3"
   }
 }

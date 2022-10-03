@@ -4,9 +4,32 @@ const mongo = require('./environment/mongo');
 const axios = require('axios');
 var cheerio = require('cheerio');
 var _ = require('lodash');
+
+const { get, identity } = require('lodash');
+
 const app = express()
 const port = 3002
+var targeturl="";
+var proxy={
+    host:"8.8.8.8",
+    port:80,
+    auth:{
 
+    }
+}
+
+  
+  
+var user=["wanrend","Jiangyo56197856","yvannacolor","nurpeking","weichan33",
+        "powell8900","WyattDon1","DavidKe36564685","Daniel93403368","lucy131420",
+    "Paul89480586","DavidKe36564685","ghjhg798","Daniel93403368","wayubi",
+    "fWH2YFXxtmC5c6F","i788gg94","Stanley11567109","AlexLee5917","ZhangCh64515564",
+    "Roxxane05470991","j7OI8UrasgGCFOA","Ayaka68429502","Rob57813350","Frankki69525145",
+    "HarryMasibay","Chris78069630","Jamiepete7","kamila59625496","Stevens9090",
+    "risforr","TommyGood777","turikko_mogura","qq95zcb","jiangseng1",
+    "yu15767743","Shakira7007","chenxq5212","wangjin53552649","malongyun807",
+    "pepinolaja","xxyz2023","teresa81988","oota59406827","TieDreamer",
+    "awk1001","budaizouyuncai","yuko980915","echoo_cheong","kangche78678187"];
 let arr = [];
 let array = [];
 app.all('*', function (req, res, next) {
@@ -17,8 +40,23 @@ app.all('*', function (req, res, next) {
     res.header("Content-Type", "application/json;charset=utf-8"); next();
 });
 app.get('/', (req, res) => {
+
     res.send('Hello World!')
 })
+
+app.get('/gettwitter', (req, res) => {
+    async function get() {
+        const browser = await puppeteer.launch({headless: false});
+        const page = await browser.newPage();
+        await page.goto('http://books.toscrape.com/');
+        await page.waitFor(1000);
+        // Scrape
+        browser.close();
+        return result;
+      }
+    res.send('ok');
+})
+
 let gamedata=[];
 app.get("/storedata",(req,res)=>{
     console.log(gamedata);
@@ -1643,4 +1681,975 @@ app.get("/getmetaformysql", (req, res) => {
 })
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
+})
+app.get("/getunimovie",(req,res)=>{
+    function get(num) {
+        mongo.Cleanmovie.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.name);
+            mongo.Movie.findOne({product_title:doc.product_title}).exec((err,docu)=>{
+                if(!docu)
+                {
+                    let obj = {};
+                    
+                    obj.product_title = doc.product_title;
+                    let data = new mongo.Movie(obj);
+                    data.save().then(()=>{
+                        if (num < 48426)
+                        get(num + 1);
+                    });
+                }
+                else
+                {
+                    if (num < 48426)
+                        get(num + 1);
+                }
+            })
+          
+           
+        })
+    }
+    get(0);
+    res.send("ok");
+})
+
+app.get("/getunitv",(req,res)=>{
+    function get(num) {
+        mongo.Cleantv.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.name);
+            mongo.Tv.findOne({product_title:doc.product_title}).exec((err,docu)=>{
+                if(!docu)
+                {
+                    let obj = {};
+                    
+                    obj.product_title = doc.product_title;
+                    let data = new mongo.Tv(obj);
+                    data.save().then(()=>{
+                        if (num < 11114)
+                        get(num + 1);
+                    });
+                }
+                else
+                {
+                    if (num < 11114)
+                        get(num + 1);
+                }
+            })
+          
+           
+        })
+    }
+    get(0);
+    res.send("ok");
+})
+app.get("/getunimusic",(req,res)=>{
+    function get(num) {
+        mongo.Cleanmusic.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.name);
+            mongo.Music.findOne({product_title:doc.product_title}).exec((err,docu)=>{
+                if(!docu)
+                {
+                    let obj = {};
+                    
+                    obj.product_title = doc.product_title;
+                    let data = new mongo.Music(obj);
+                    data.save().then(()=>{
+                        if (num < 5966)
+                        get(num + 1);
+                    });
+                }
+                else
+                {
+                    if (num < 5966)
+                        get(num + 1);
+                }
+            })
+          
+           
+        })
+    }
+    get(0);
+    res.send("ok");
+})
+
+app.get("/getmovieinfo",(req,res)=>{
+    function getmovieinfo(num){
+        mongo.Movie.findOne({}).skip(num).exec((err,doc)=>{
+            console.log("开始操作：" + num + doc.product_title);
+            
+            let link=doc.product_title.replace(/[`:_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(/\s+/g,"-");
+           
+            
+            mongo.Movie.updateOne({product_title:doc.product_title}, {$set:{link:link}}).exec(()=>{
+                console.log(link);
+                if (num<6157)
+                getmovieinfo(num+1);
+            });
+          
+        })
+        
+    }
+    function gettvinfo(num){
+        mongo.Tv.findOne({}).skip(num).exec((err,doc)=>{
+            console.log("开始操作：" + num + doc.product_title);
+            
+            let link=doc.product_title.replace(/[`:_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(/\s+/g,"-");
+           
+            
+            mongo.Tv.updateOne({product_title:doc.product_title}, {$set:{link:link}}).exec(()=>{
+                console.log(link);
+                if (num<3094)
+                gettvinfo(num+1);
+            });
+          
+        })
+        
+    }
+    function getmusicinfo(num){
+        mongo.Music.findOne({}).skip(num).exec((err,doc)=>{
+            console.log("开始操作：" + num + doc.product_title);
+            
+            let link=doc.product_title.replace(/[`:_.-∞~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(/\s+/g,"-");
+           
+            
+            mongo.Music.updateOne({product_title:doc.product_title}, {$set:{link:link}}).exec(()=>{
+                console.log(link);
+                if (num<2287)
+                getmusicinfo(num+1);
+            });
+          
+        })
+        
+    }
+    getmovieinfo(0);
+    gettvinfo(0);
+    getmusicinfo(0);
+    res.send("ok");
+    
+})
+
+app.get("/getmusicdetail",(req,res)=>{
+    function get(num) {
+        mongo.Music.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.product_title);
+           
+            axios.get('https://www.metacritic.com/music/' +doc.link+'/details')
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let summary=$(".product_summary").find(".data").text();
+                    let record_label=$(".new_details").children().first().find(".data").text();
+                    let date=$('.product_data').find('.release').find('.data').text();
+                    
+                    let genre=[];
+                    $(".genres").find(".data").each(function(i, elem) {
+                        genre[i] = $(this).text();
+                      });
+                    let name=[];
+                    $(".new_details").children().first().next().next().find(".data").each(function(i, elem) {
+                        name[i] = $(this).text();
+                      });
+                    let credit=[];
+                    $(".new_details").children().first().next().next().next().find(".data").each(function(i, elem) {
+                        credit[i] = $(this).text();
+                      });
+                    
+                    mongo.Music.updateOne({ product_title: doc.product_title }, {date:date,summary:summary,record_label:record_label,genre:genre,name:name,credit:credit }).exec(() => {
+                        if(num==96||num==1334)
+                        get(num+10);
+                        else if (num < 2283&&num!=2279)
+                            get(num + 5);
+                    })
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 2283)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/gettvdetail",(req,res)=>{
+    function get(num) {
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
+            console.log("开始操作：" + num + doc.product_title);
+       
+            axios.get('https://www.metacritic.com/tv/' +link)
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let distributor=$(".distributor").find("a").text();
+                    let date=$(".release_date").children().first().next().text();
+                    let summary=$(".summary_deck").children().first().next().text();
+                    
+                    let genre=[];
+                    $(".genres").children().first().next().children().each(function(i, elem) {
+                        genre[i] = $(this).text();
+                      });
+                    let creator=[];
+                   
+                   
+                    $(".creator").find("a").each(function(i, elem) {
+                        creator[i] = $(this).text();
+                      });
+                    let star=[];
+                    $(".summary_cast").find("a").each(function(i, elem) {
+                        star[i] = $(this).text();
+                      });
+                    mongo.Tv.updateOne({ product_title: doc.product_title }, {star:star,summary:summary,distributor:distributor,genre:genre,creator:creator,date:date }).exec(() => {
+                        if (num < 3090)
+                            get(num + 5);
+                    })
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmoviedetail",(req,res)=>{
+    function get(num) {
+        mongo.Movie.findOne({}).skip(num).exec((err, doc) => {
+           
+            console.log("开始操作：" + num + doc.product_title);
+       
+            axios.get('https://www.metacritic.com/movie/'+doc.link)
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let distributor=$(".distributor").find("a").text();
+                    
+                    let date=$(".release_date").children().first().next().text();
+                    let summary=$(".summary_deck").children().first().next().text();
+                    
+                    let genre=[];
+                    $(".genres").children().first().next().children().each(function(i, elem) {
+                        genre[i] = $(this).text();
+                      });
+                    let director=$(".director").find("a").text();
+                    let rating=$(".rating").children().first().next().text();
+                    let runtime=$(".runtime").children().first().next().text();
+                    let star=[];
+                    $(".summary_cast").find("a").each(function(i, elem) {
+                        star[i] = $(this).text();
+                      });
+                    mongo.Movie.updateOne({ product_title: doc.product_title }, {director:director,rating:rating,star:star,summary:summary,distributor:distributor,genre:genre,runtime:runtime,date:date }).exec(() => {
+                        if (num==100)
+                            get(num+10);
+                        else if (num < 6153)
+                            get(num + 5);
+                    })
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了"+error);
+                    if (num==100)
+                        get(num+10);
+                    else if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 6153)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    //for (let i=0;i<5;i++)
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/gettvcritic",(req,res)=>{
+    function get(num) {
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
+            console.log("开始操作：" + num + doc.product_title);
+       
+            axios.get('https://www.metacritic.com/tv/' +link+"/critic-reviews")
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let metascore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
+                    let desc=$(".score_details_module").find(".summary").find(".desc").text();
+                    let number=$(".score_details_module").find(".summary").find("strong").text();
+                    let positive=$(".score_details_module").find(".score_counts").children().first().find(".count").text();
+                    let mixed=$(".score_details_module").find(".score_counts").children().first().next().find(".count").text();
+                    let negative=$(".score_details_module").find(".score_counts").children().first().next().next().find(".count").text();
+                    Promise.all($(".product_reviews").find(".review_content").map(function(i, el) {
+                        let object = {};
+                            object.href = $(el).find(".full_review").find("a").attr('href');
+                            object.source=$(el).find(".source").text();
+                            object.author = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".review_grade").text();
+                            object.body = $(el).find(".review_body").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Tvcritic(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Tv.updateOne({ product_title: doc.product_title }, {metascore:metascore,desc:desc,num:number,positive:positive,mixed:mixed,negative:negative }).exec(() => {
+                            if (num < 3090)
+                                get(num + 5);
+                        })
+                      })
+                    
+                 
+                    
+                 
+                   
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+app.get("/getmusiccritic",(req,res)=>{
+    function get(num) {
+        mongo.Music.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.product_title);
+            axios.get('https://www.metacritic.com/music/' +doc.link+'/critic-reviews')
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let metascore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
+                    let desc=$(".score_details_module").find(".summary").find(".desc").text();
+                    let number=$(".score_details_module").find(".summary").find("strong").text();
+                    let positive=$(".score_details_module").find(".score_counts").children().first().find(".count").text();
+                    let mixed=$(".score_details_module").find(".score_counts").children().first().next().find(".count").text();
+                    let negative=$(".score_details_module").find(".score_counts").children().first().next().next().find(".count").text();
+                    Promise.all($(".product_reviews").find(".review_content").map(function(i, el) {
+                        let object = {};
+                            object.href = $(el).find(".full_review").find("a").attr('href');
+                            object.source=$(el).find(".source").text();
+                            object.author = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".review_grade").text();
+                            object.body = $(el).find(".review_body").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Musiccritic(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Music.updateOne({ product_title: doc.product_title }, {metascore:metascore,desc:desc,num:number,positive:positive,mixed:mixed,negative:negative }).exec(() => {
+                            if(num==96||num==1334)
+                                get(num+10);
+                            else if (num < 2283&&num!=2279)
+                                get(num + 5);
+                        })
+                      })
+                    
+                 
+                    
+                 
+                   
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 2283)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmoviecritic",(req,res)=>{
+    function get(num) {
+        mongo.Movie.findOne({}).skip(num).exec((err, doc) => {
+           
+            console.log("开始操作：" + num + doc.product_title);
+       
+            axios.get('https://www.metacritic.com/movie/' +doc.link+'/critic-reviews')
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let metascore=$(".simple_summary").find(".metascore_w").text();
+                    let desc=$(".simple_summary").find(".score_description").children().first().text();
+                    let number=$(".simple_summary").find(".score_description").children().first().next().text();
+                    let positive=$(".simple_summary").children().children().last().find(".right").children().first().find(".count").text();
+                    //console.log($(".simple_summary").children().children().last().find(".right").html())
+                    let mixed=$(".simple_summary").children().children().last().find(".right").children().first().next().find(".count").text();
+                    let negative=$(".simple_summary").children().children().last().find(".right").children().first().next().next().find(".count").text();
+                    Promise.all($(".critic_reviews").find(".review").map(function(i, el) {
+                        let object = {};
+                            object.href = $(el).find(".read_full").attr('href');
+                            object.source=$(el).find(".source").text();
+                            object.author = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".metascore_w").text();
+                            object.body = $(el).find(".summary").find(".no_hover").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Moviecritic(object);
+                            data.save();
+                      })).then(()=>{
+                    mongo.Movie.updateOne({ product_title: doc.product_title }, {metascore:metascore,desc:desc,num:number,positive:positive,mixed:mixed,negative:negative }).exec(() => {
+                        if (num==100)
+                            get(num+10);
+                        else if (num < 6153)
+                            get(num + 5);
+                    })
+                })
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了"+error);
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 6153)
+                            get(num + 5);
+                    }
+                   
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    //for (let i=0;i<5;i++)
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmusicuser",(req,res)=>{
+    function get(num) {
+        mongo.Music.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.product_title);
+            axios.get('https://www.metacritic.com/music/' +doc.link+'/user-reviews')
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let userscore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
+                    let user_desc=$(".score_details_module").find(".summary").find(".desc").text();
+                    let user_number=$(".score_details_module").find(".summary").find("strong").text();
+                    let user_positive=$(".score_details_module").find(".score_counts").children().first().find(".count").text();
+                    let user_mixed=$(".score_details_module").find(".score_counts").children().first().next().find(".count").text();
+                    let user_negative=$(".score_details_module").find(".score_counts").children().first().next().next().find(".count").text();
+                    let page=$(".pages").find(".last_page").find("a").text();
+                    Promise.all($(".product_reviews").find(".user_review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".name").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".review_grade").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".review_helpful").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Musicuser(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Music.updateOne({ product_title: doc.product_title }, {page:page,userscore:userscore,user_desc:user_desc,user_number:user_number,user_positive:user_positive,user_mixed:user_mixed,user_negative:user_negative }).exec(() => {
+                            if(num==96||num==1334)
+                                get(num+10);
+                            else if (num < 2283&&num!=2279)
+                                get(num + 5);
+                        })
+                      })
+                    
+                 
+                    
+                 
+                   
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 2283)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/gettvuser",(req,res)=>{
+    function get(num) {
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
+            console.log("开始操作：" + num + doc.product_title);
+       
+            axios.get('https://www.metacritic.com/tv/' +link+"/user-reviews")
+                .then(function (res) {
+                      $ = cheerio.load(res.data);
+                    let userscore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
+                    let user_desc=$(".score_details_module").find(".summary").find(".desc").text();
+                    let user_number=$(".score_details_module").find(".summary").find("strong").text();
+                    let user_positive=$(".score_details_module").find(".score_counts").children().first().find(".count").text();
+                    let user_mixed=$(".score_details_module").find(".score_counts").children().first().next().find(".count").text();
+                    let user_negative=$(".score_details_module").find(".score_counts").children().first().next().next().find(".count").text();
+                    let page=$(".pages").find(".last_page").find("a").text();
+                    Promise.all($(".product_reviews").find(".user_review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".name").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".review_grade").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Tvuser(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Tv.updateOne({ product_title: doc.product_title }, {page:page,userscore:userscore,user_desc:user_desc,user_number:user_number,user_positive:user_positive,user_mixed:user_mixed,user_negative:user_negative }).exec(() => {
+                            if(num < 3090)
+                         
+                                get(num + 5);
+                        })
+                      })
+                    
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/gettvmoreuser",(req,res)=>{
+    function get(num) {
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
+            console.log("开始操作：" + num + doc.product_title);
+            if (!doc.page)
+            {
+                if (num < 3090)
+                    get(num + 5);
+            }
+            else
+            {
+            let max=parseInt(doc.page);
+            let page=1;
+            function getpage(page){
+                axios.get('https://www.metacritic.com/tv/' +link+"/user-reviews?page="+page)
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    
+                    Promise.all($(".product_reviews").find(".user_review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".name").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".review_grade").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".review_helpful").find(".helpful_summary").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Tvuser(object);
+                            data.save();
+                      })).then(()=>{
+                        if (page<max-1)
+                            getpage(page+1);
+                        else if(num < 3090)
+                            get(num + 5);
+                       
+                      })
+                    
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            getpage(page);
+                        }, 5000);
+                });
+            }
+            getpage(page);
+           
+            }
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmusicmoreuser",(req,res)=>{
+    function get(num) {
+        mongo.Music.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.product_title);
+            if (!doc.page)
+            {
+                if(num==96||num==1334)
+                    get(num+10);
+                else if(num==2279)
+                    console.log("结束了");
+                if (num < 2283)
+                    get(num + 5);
+            }
+            else
+            {
+            let max=parseInt(doc.page);
+            let page=1;
+            function getpage(page){
+                axios.get('https://www.metacritic.com/music/' +doc.link+"/user-reviews?page="+page)
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    
+                    Promise.all($(".product_reviews").find(".user_review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".name").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".review_grade").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".review_helpful").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Musicuser(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        
+                            if(num==96||num==1334)
+                                get(num+10);
+                            else if(num==2279)
+                                console.log("结束了");
+                            else if (page<max-1)
+                                getpage(page+1);
+                            else if (num < 2283&&num!=2279)
+                                get(num + 5);
+                        
+                      })
+                    
+                 
+                    
+                 
+                   
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 2283)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            getpage(page);
+                        }, 5000);
+                });
+            }
+            
+                getpage(page);
+        }
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmovieuser",(req,res)=>{
+    function get(num) {
+        mongo.Movie.findOne({}).skip(num).exec((err, doc) => {
+           
+            console.log("开始操作：" + num + doc.product_title);
+       
+            axios.get('https://www.metacritic.com/movie/' +doc.link+'/user-reviews')
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let userscore=$(".simple_summary").find(".metascore_w").text();
+                    let user_desc=$(".simple_summary").find(".score_description").children().first().text();
+                    let user_number=$(".simple_summary").find(".score_description").children().first().next().text();
+                
+                    let user_positive=$(".simple_summary").children().children().last().find(".right").children().first().next().find(".count").text();
+                    //console.log($(".simple_summary").children().children().last().find(".right").html())
+                    let user_mixed=$(".simple_summary").children().children().last().find(".right").children().first().next().next().find(".count").text();
+                    let user_negative=$(".simple_summary").children().children().last().find(".right").children().first().next().next().next().find(".count").text();
+                    let page=$(".pages").find(".last_page").find("a").text();
+                    Promise.all($(".reviews").find(".review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".metascore_w").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".helpful").find(".text").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Movieuser(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Movie.updateOne({ product_title: doc.product_title }, {page:page,userscore:userscore,user_desc:user_desc,user_number:user_number,user_positive:user_positive,user_mixed:user_mixed,user_negative:user_negative }).exec(() => {
+                            
+                        if (num==100)
+                            get(num+10);
+                        else if (num < 6153)
+                            get(num + 5);
+                    })
+                })
+                }) 
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 6153)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+          
+            
+        })
+    }
+    //for (let i=0;i<5;i++)
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmoviemoreuser",(req,res)=>{
+    function get(num) {
+        mongo.Movie.findOne({}).skip(num).exec((err, doc) => {
+           
+            
+            if (!doc.page)
+            {
+                if (num==100)
+                    get(num+10);
+                else if (num < 6153)
+                    get(num + 5);
+            }
+            else
+            {
+            let max=parseInt(doc.page);
+            let page=1;
+         
+            function getpage(page){
+            console.log("开始操作：" + num + doc.product_title+page);
+            axios.get('https://www.metacritic.com/movie/' +doc.link+'/user-reviews?page='+page)
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    
+                    Promise.all($(".reviews").find(".review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".metascore_w").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".helpful").find(".text").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Movieuser(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        
+                        if (num==100)
+                            get(num+10);
+                        else if (page<max-1)
+                            getpage(page+1);
+                        else if (num < 6153)
+                            get(num + 5);
+                    })
+                })
+              
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 6153)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            getpage(num);
+                        }, 5000);
+                });
+          
+            
+        }
+        getpage(page);
+    }
+    })
+}
+    //for (let i=0;i<5;i++)
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
 })

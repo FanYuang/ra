@@ -23,6 +23,105 @@ conn.on('err', (err) => {
 conn.on('close', () => {
   console.log('mongo disconnected!');
 })
+let Userschema=new mongoose.Schema({
+  name:String,
+  date:String,
+  review_grade:String,
+  body:String,
+  helpful:String,
+  product_title:String
+})
+let Movieschema=new mongoose.Schema({
+  product_title:String,
+  link:String,
+  director:String,
+  rating:String,
+  star:Array,
+  summary:String,
+  distributor:String,
+  genre:Array,
+  runtime:String,
+  date:String,
+  metascore:String,
+  desc:String,
+  num:String,
+  positive:String,
+  mixed:String,
+  negative:String,
+  userscore:String,
+  user_desc:String,
+  user_number:String,
+  user_positive:String,
+  user_mixed:String,
+  user_negative:String,
+  page:String  
+  
+})
+let Musicschema=new mongoose.Schema({
+  product_title:String,
+  link:String,
+  summary:String,
+  record_label:String,
+  genre:Array,
+  name:Array,
+  credit:Array,
+  date:String,
+  metascore:String,
+  desc:String,
+  num:String,
+  positive:String,
+  mixed:String,
+  negative:String,
+  userscore:String,
+  user_desc:String,
+  user_number:String,
+  user_positive:String,
+  user_mixed:String,
+  user_negative:String,
+  page:String
+  
+})
+let Tvschema=new mongoose.Schema({
+  product_title:String,
+  link:String,
+  date:String,
+  genre:Array,
+  summary:String,
+  distributor:String,
+  creator:Array,
+  star:Array,
+  metascore:String,
+  desc:String,
+  num:String,
+  positive:String,
+  mixed:String,
+  negative:String,
+  userscore:String,
+  user_desc:String,
+  user_number:String,
+  user_positive:String,
+  user_mixed:String,
+  user_negative:String,
+  page:String 
+})
+
+let criticschema=new mongoose.Schema({
+  href:String,
+  source:String,
+  author:String,
+  date:String,
+  review_grade:String,
+  body:String,
+  product_title:String,
+  metascore:String,
+  desc:String,
+  num:String,
+  positive:String,
+  mixed:String,
+  negative:String 
+                     
+})
+
 let Metareviewschema=new mongoose.Schema({
   name:String,
   product_title:String,
@@ -102,7 +201,9 @@ url:String,
 date:String,
 })
 Metareviewschema.index({ date: "hashed" });
-
+let Movie=conn.model('Movie', Movieschema);
+let Music=conn.model('Music', Musicschema);
+let Tv=conn.model('Tv', Tvschema);
 let Game=conn.model('Game', Gameschema);
 let Meta=conn.model('Meta', Metaschema);
 let Gameuser=conn.model('Gameuser', Gameuserschema);
@@ -118,25 +219,18 @@ let Cleantv=conn.model('Cleantv',Metareviewschema);
 let Cleanmovie=conn.model('Cleanmovie',Metareviewschema);
 let Cleanspot=conn.model('Cleanspot',Spotschema);
 let Analysis=conn.model('Analysis',analysisschema);
-let Cleanyi=conn.model('Cleanyi',Metareviewschema);
-let Cleaner=conn.model('Cleaner',Metareviewschema);
-let Cleansan=conn.model('Cleansan',Metareviewschema);
-let Cleansi=conn.model('Cleansi',Metareviewschema);
-let Cleanwu=conn.model('Cleanwu',Metareviewschema);
-let Cleanliu=conn.model('Cleanliu',Metareviewschema);
-let Cleanqi=conn.model('Cleanqi',Metareviewschema);
-let Cleanba=conn.model('Cleanba',Metareviewschema);
-let Cleanjiu=conn.model('Cleanjiu',Metareviewschema);
-let Cleanshi=conn.model('Cleanshi',Metareviewschema);
-let Cleana=conn.model('Cleana',Metareviewschema);
-let Cleanb=conn.model('Cleanb',Metareviewschema);
-let Cleanc=conn.model('Cleanc',Metareviewschema);
-let Cleand=conn.model('Cleand',Metareviewschema);
-let Cleane=conn.model('Cleane',Metareviewschema);
+let Tvcritic=conn.model('Tvcritic',criticschema);
+let Musiccritic=conn.model('Musiccritic',criticschema);
+let Moviecritic=conn.model('Moviecritic',criticschema);
+let Musicuser=conn.model('Musicuser',Userschema);
+let Tvuser=conn.model('Tvuser',Userschema);
+let Movieuser=conn.model('Movieuser',Userschema);
 module.exports = {
   conn: conn,
   Analysis:Analysis,
- 
+  Movie:Movie,
+  Tv:Tv,
+  Music:Music,
   Game:Game,
   Meta:Meta,
   Metauser:Metauser,
@@ -151,19 +245,11 @@ module.exports = {
   Cleantv:Cleantv,
   Cleanmusic:Cleanmusic,
   Cleanspot:Cleanspot,
- Cleanyi:Cleanyi,
- Cleaner:Cleaner,
- Cleansan:Cleansan,
- Cleansi:Cleansi,
- Cleanwu:Cleanwu,
- Cleanliu:Cleanliu,
- Cleanqi:Cleanqi,
- Cleanba:Cleanba,
- Cleanjiu:Cleanjiu,
- Cleanshi:Cleanshi,
- Cleana:Cleana,
- Cleanb:Cleanb,
- Cleanc:Cleanc,
- Cleand:Cleand,
- Cleane:Cleane,
+  Tvcritic:Tvcritic,
+  Musiccritic:Musiccritic,
+  Moviecritic:Moviecritic,
+  Musicuser:Musicuser,
+  Tvuser:Tvuser,
+  Movieuser:Movieuser
+
 };
