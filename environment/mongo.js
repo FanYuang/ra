@@ -54,7 +54,8 @@ let Movieschema=new mongoose.Schema({
   user_positive:String,
   user_mixed:String,
   user_negative:String,
-  page:String  
+  page:String,
+  URL:String,  
   
 })
 let Musicschema=new mongoose.Schema({
@@ -78,7 +79,8 @@ let Musicschema=new mongoose.Schema({
   user_positive:String,
   user_mixed:String,
   user_negative:String,
-  page:String
+  page:String,
+  URL:String,  
   
 })
 let Tvschema=new mongoose.Schema({
@@ -102,7 +104,8 @@ let Tvschema=new mongoose.Schema({
   user_positive:String,
   user_mixed:String,
   user_negative:String,
-  page:String 
+  page:String ,
+  URL:String,  
 })
 
 let criticschema=new mongoose.Schema({

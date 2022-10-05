@@ -1841,8 +1841,9 @@ app.get("/getmusicdetail",(req,res)=>{
         mongo.Music.findOne({}).skip(num).exec((err, doc) => {
 
             console.log("开始操作：" + num + doc.product_title);
-           
-            axios.get('https://www.metacritic.com/music/' +doc.link+'/details')
+
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(doc.URL+'/details')
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let summary=$(".product_summary").find(".data").text();
@@ -1865,7 +1866,7 @@ app.get("/getmusicdetail",(req,res)=>{
                     mongo.Music.updateOne({ product_title: doc.product_title }, {date:date,summary:summary,record_label:record_label,genre:genre,name:name,credit:credit }).exec(() => {
                         if(num==96||num==1334)
                         get(num+10);
-                        else if (num < 2283&&num!=2279)
+                        else if (num < 2281&&num!=2279)
                             get(num + 5);
                     })
                 })
@@ -1873,7 +1874,7 @@ app.get("/getmusicdetail",(req,res)=>{
                     console.log(num+"失败了");
                     if (error&&error.response&&error.response.status == 404)
                     {
-                        if (num < 2283)
+                        if (num < 2281)
                             get(num + 5);
                     }
                     else
@@ -1881,7 +1882,11 @@ app.get("/getmusicdetail",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
-          
+                else
+                {
+                    if (num < 2281)
+                            get(num + 5);
+                }
            
         })
     }
@@ -1892,6 +1897,9 @@ app.get("/getmusicdetail",(req,res)=>{
     get(4);
     res.send("ok");
 })
+const replaceStr = (str) => {
+    return str.substring(0, 23) + "com" + str.substring(26);
+  }
 
 app.get("/gettvdetail",(req,res)=>{
     function get(num) {
@@ -1901,8 +1909,10 @@ app.get("/gettvdetail",(req,res)=>{
             link=link.replace(": ","/");
             link=link.replace(/\s+/g,"-");
             console.log("开始操作：" + num + doc.product_title);
+            
        
-            axios.get('https://www.metacritic.com/tv/' +link)
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(replaceStr(doc.URL))
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let distributor=$(".distributor").find("a").text();
@@ -1941,6 +1951,11 @@ app.get("/gettvdetail",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
+            else
+            {
+                if (num < 3090)
+                            get(num + 5);
+            }
           
            
         })
@@ -1958,8 +1973,14 @@ app.get("/getmoviedetail",(req,res)=>{
         mongo.Movie.findOne({}).skip(num).exec((err, doc) => {
            
             console.log("开始操作：" + num + doc.product_title);
-       
-            axios.get('https://www.metacritic.com/movie/'+doc.link)
+            if (doc.product_title=="Censor")
+            {
+                console.log(doc.URL);
+                
+            }
+                
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(doc.URL)
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let distributor=$(".distributor").find("a").text();
@@ -2000,9 +2021,15 @@ app.get("/getmoviedetail",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
-          
+                else
+                {
+                    if (num < 6153)
+                            get(num + 5);
+                }
+                
            
         })
+
     }
     //for (let i=0;i<5;i++)
     get(0);
@@ -2021,8 +2048,11 @@ app.get("/gettvcritic",(req,res)=>{
             link=link.replace(": ","/");
             link=link.replace(/\s+/g,"-");
             console.log("开始操作：" + num + doc.product_title);
-       
-            axios.get('https://www.metacritic.com/tv/' +link+"/critic-reviews")
+            let str;
+            if (doc.URL&&doc.URL.match(/http/g))
+                 str=replaceStr(doc.URL);
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(str+"/critic-reviews")
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let metascore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
@@ -2058,6 +2088,7 @@ app.get("/gettvcritic",(req,res)=>{
                 })
                 .catch(function (error) {
                     console.log(num+"失败了");
+                    console.log(error);
                     if (error&&error.response&&error.response.status == 404)
                     {
                         if (num < 3090)
@@ -2069,6 +2100,90 @@ app.get("/gettvcritic",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
+                else
+                {
+                    if (num < 3090)
+                        get(num + 5);
+                }
+                
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+app.get("/gettvcriticnew",(req,res)=>{
+    function get(num) {
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
+            console.log("开始操作：" + num + doc.product_title);
+            let str;
+            if (doc.URL&&doc.URL.match(/http/g))
+                 str=replaceStr(doc.URL);
+            if (doc.URL&&doc.URL.match(/http/g)&&!doc.negative)
+            axios.get(str+"/critic-reviews")
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let metascore=$(".simple_summary").find(".metascore_w").text();
+                    let desc=$(".simple_summary").find(".score_description").children().first().text();
+                    let number=$(".simple_summary").find(".score_description").children().first().next().text();
+                    let positive=$(".simple_summary").children().children().last().find(".right").children().first().find(".count").text();
+                    //console.log($(".simple_summary").children().children().last().find(".right").html())
+                    let mixed=$(".simple_summary").children().children().last().find(".right").children().first().next().find(".count").text();
+                    let negative=$(".simple_summary").children().children().last().find(".right").children().first().next().next().find(".count").text();
+                    Promise.all($(".critic_reviews").find(".review").map(function(i, el) {
+                        let object = {};
+                            object.href = $(el).find(".read_full").attr('href');
+                            object.source=$(el).find(".source").text();
+                            object.author = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".metascore_w").text();
+                            object.body = $(el).find(".summary").find(".no_hover").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Tvcritic(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Tv.updateOne({ product_title: doc.product_title }, {metascore:metascore,desc:desc,num:number,positive:positive,mixed:mixed,negative:negative }).exec(() => {
+                            if (num < 3090)
+                                get(num + 5);
+                        })
+                      })
+                    
+                 
+                    
+                 
+                   
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    console.log(error);
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+                else
+                {
+                    if (num < 3090)
+                        get(num + 5);
+                }
+                
           
            
         })
@@ -2085,7 +2200,9 @@ app.get("/getmusiccritic",(req,res)=>{
         mongo.Music.findOne({}).skip(num).exec((err, doc) => {
 
             console.log("开始操作：" + num + doc.product_title);
-            axios.get('https://www.metacritic.com/music/' +doc.link+'/critic-reviews')
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(doc.URL+'/critic-reviews')
+           
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let metascore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
@@ -2111,7 +2228,7 @@ app.get("/getmusiccritic",(req,res)=>{
                         mongo.Music.updateOne({ product_title: doc.product_title }, {metascore:metascore,desc:desc,num:number,positive:positive,mixed:mixed,negative:negative }).exec(() => {
                             if(num==96||num==1334)
                                 get(num+10);
-                            else if (num < 2283&&num!=2279)
+                            else if (num < 2281&&num!=2279)
                                 get(num + 5);
                         })
                       })
@@ -2125,7 +2242,7 @@ app.get("/getmusiccritic",(req,res)=>{
                     console.log(num+"失败了");
                     if (error&&error.response&&error.response.status == 404)
                     {
-                        if (num < 2283)
+                        if (num < 2281)
                             get(num + 5);
                     }
                     else
@@ -2133,6 +2250,12 @@ app.get("/getmusiccritic",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
+                else
+                {
+                    if (num < 2281)
+                            get(num + 5);
+                }
+
           
            
         })
@@ -2151,7 +2274,8 @@ app.get("/getmoviecritic",(req,res)=>{
            
             console.log("开始操作：" + num + doc.product_title);
        
-            axios.get('https://www.metacritic.com/movie/' +doc.link+'/critic-reviews')
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(doc.URL+'/critic-reviews')
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let metascore=$(".simple_summary").find(".metascore_w").text();
@@ -2196,6 +2320,11 @@ app.get("/getmoviecritic",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
+                else
+                {
+                    if (num < 6153)
+                            get(num + 5);
+                }
           
            
         })
@@ -2214,7 +2343,9 @@ app.get("/getmusicuser",(req,res)=>{
         mongo.Music.findOne({}).skip(num).exec((err, doc) => {
 
             console.log("开始操作：" + num + doc.product_title);
-            axios.get('https://www.metacritic.com/music/' +doc.link+'/user-reviews')
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(doc.URL+'/user-reviews')
+            
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let userscore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
@@ -2244,7 +2375,7 @@ app.get("/getmusicuser",(req,res)=>{
                         mongo.Music.updateOne({ product_title: doc.product_title }, {page:page,userscore:userscore,user_desc:user_desc,user_number:user_number,user_positive:user_positive,user_mixed:user_mixed,user_negative:user_negative }).exec(() => {
                             if(num==96||num==1334)
                                 get(num+10);
-                            else if (num < 2283&&num!=2279)
+                            else if (num < 2281&&num!=2279)
                                 get(num + 5);
                         })
                       })
@@ -2258,7 +2389,7 @@ app.get("/getmusicuser",(req,res)=>{
                     console.log(num+"失败了");
                     if (error&&error.response&&error.response.status == 404)
                     {
-                        if (num < 2283)
+                        if (num < 2281)
                             get(num + 5);
                     }
                     else
@@ -2266,6 +2397,11 @@ app.get("/getmusicuser",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
+                else
+                {
+                    if (num < 2281)
+                            get(num + 5);
+                }
           
            
         })
@@ -2286,8 +2422,8 @@ app.get("/gettvuser",(req,res)=>{
             link=link.replace(": ","/");
             link=link.replace(/\s+/g,"-");
             console.log("开始操作：" + num + doc.product_title);
-       
-            axios.get('https://www.metacritic.com/tv/' +link+"/user-reviews")
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(replaceStr(doc.URL)+'/user-reviews')
                 .then(function (res) {
                       $ = cheerio.load(res.data);
                     let userscore=$(".score_details_module").find(".score_summary").find(".metascore_w").text();
@@ -2335,7 +2471,12 @@ app.get("/gettvuser",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
-          
+                else
+                {
+                    if (num < 3090)
+                        get(num + 5);
+                }
+                
            
         })
     }
@@ -2346,7 +2487,81 @@ app.get("/gettvuser",(req,res)=>{
     get(4);
     res.send("ok");
 })
-
+app.get("/gettvusernew",(req,res)=>{
+    function get(num) {
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
+            console.log("开始操作：" + num + doc.product_title);
+            if (doc.URL&&doc.URL.match(/http/g)&&!doc.user_negative)
+            axios.get(replaceStr(doc.URL)+'/user-reviews')
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    let userscore=$(".simple_summary").find(".metascore_w").text();
+                    let user_desc=$(".simple_summary").find(".score_description").children().first().text();
+                    let user_number=$(".simple_summary").find(".score_description").children().first().next().text();
+                
+                    let user_positive=$(".simple_summary").children().children().last().find(".right").children().first().next().find(".count").text();
+                    //console.log($(".simple_summary").children().children().last().find(".right").html())
+                    let user_mixed=$(".simple_summary").children().children().last().find(".right").children().first().next().next().find(".count").text();
+                    let user_negative=$(".simple_summary").children().children().last().find(".right").children().first().next().next().next().find(".count").text();
+                    let page=$(".pages").find(".last_page").find("a").text();
+                    Promise.all($(".reviews").find(".review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".metascore_w").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".helpful").find(".text").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Tvuser(object);
+                            data.save();
+                      })).then(()=>{
+                      
+                        mongo.Tv.updateOne({ product_title: doc.product_title }, {page:page,userscore:userscore,user_desc:user_desc,user_number:user_number,user_positive:user_positive,user_mixed:user_mixed,user_negative:user_negative }).exec(() => {
+                            if(num < 3090)
+                         
+                                get(num + 5);
+                        })
+                      })
+                    
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            get(num);
+                        }, 5000);
+                });
+                else
+                {
+                    if (num < 3090)
+                        get(num + 5);
+                }
+                
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
 app.get("/gettvmoreuser",(req,res)=>{
     function get(num) {
         mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
@@ -2355,7 +2570,7 @@ app.get("/gettvmoreuser",(req,res)=>{
             link=link.replace(": ","/");
             link=link.replace(/\s+/g,"-");
             console.log("开始操作：" + num + doc.product_title);
-            if (!doc.page)
+            if (!doc.page||!doc.URL||!doc.URL.match(/http/g))
             {
                 if (num < 3090)
                     get(num + 5);
@@ -2365,7 +2580,7 @@ app.get("/gettvmoreuser",(req,res)=>{
             let max=parseInt(doc.page);
             let page=1;
             function getpage(page){
-                axios.get('https://www.metacritic.com/tv/' +link+"/user-reviews?page="+page)
+                axios.get(replaceStr(doc.URL)+"/user-reviews?page="+page)
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     
@@ -2421,19 +2636,17 @@ app.get("/gettvmoreuser",(req,res)=>{
     get(4);
     res.send("ok");
 })
-
-app.get("/getmusicmoreuser",(req,res)=>{
+app.get("/gettvmoreusernew",(req,res)=>{
     function get(num) {
-        mongo.Music.findOne({}).skip(num).exec((err, doc) => {
-
+        mongo.Tv.findOne({}).skip(num).exec((err, doc) => {
+            let link=doc.product_title.replace(/[`_.~!@#$%^&*()\+=<>?"{}|,\/;'\\[\]·~！@#￥%……&*（）——\+={}|《》？：“”【】、；‘’，。、]/g,"");
+            link=link.toLowerCase();
+            link=link.replace(": ","/");
+            link=link.replace(/\s+/g,"-");
             console.log("开始操作：" + num + doc.product_title);
-            if (!doc.page)
+            if (!doc.page||!doc.URL||!doc.URL.match(/http/g))
             {
-                if(num==96||num==1334)
-                    get(num+10);
-                else if(num==2279)
-                    console.log("结束了");
-                if (num < 2283)
+                if (num < 3090)
                     get(num + 5);
             }
             else
@@ -2441,7 +2654,83 @@ app.get("/getmusicmoreuser",(req,res)=>{
             let max=parseInt(doc.page);
             let page=1;
             function getpage(page){
-                axios.get('https://www.metacritic.com/music/' +doc.link+"/user-reviews?page="+page)
+                axios.get(replaceStr(doc.URL)+"/user-reviews?page="+page)
+                .then(function (res) {
+                    $ = cheerio.load(res.data);
+                    
+                    Promise.all($(".reviews").find(".review").map(function(i, el) {
+                        let object = {};
+                           
+                            
+                            object.name = $(el).find(".author").find("a").text();
+                            object.date = $(el).find(".date").text();
+                            object.review_grade = $(el).find(".metascore_w").text();
+                            object.body = $(el).find(".review_body").find(".blurb_expanded").text();
+                            if (object.body=="")
+                            object.body=$(el).find(".review_body").text();
+                            object.helpful=$(el).find(".helpful").find(".text").text();
+                            object.product_title=doc.product_title;
+                        
+                            let data = new mongo.Tvuser(object);
+                            data.save();
+                      })).then(()=>{
+                        if (page<max-1)
+                            getpage(page+1);
+                        else if(num < 3090)
+                            get(num + 5);
+                       
+                      })
+                    
+                })
+                .catch(function (error) {
+                    console.log(num+"失败了");
+                    if (error&&error.response&&error.response.status == 404)
+                    {
+                        if (num < 3090)
+                            get(num + 5);
+                    }
+                    else
+                        setTimeout(() => {
+                            console.log(num+"重新开始");
+                            getpage(page);
+                        }, 5000);
+                });
+            }
+            getpage(page);
+           
+            }
+          
+           
+        })
+    }
+    get(0);
+    get(1);
+    get(2);
+    get(3);
+    get(4);
+    res.send("ok");
+})
+
+app.get("/getmusicmoreuser",(req,res)=>{
+    function get(num) {
+        mongo.Music.findOne({}).skip(num).exec((err, doc) => {
+
+            console.log("开始操作：" + num + doc.product_title);
+            if (!doc.page||!doc.URL||!doc.URL.match(/http/g))
+            {
+                if(num==96||num==1334)
+                    get(num+10);
+                else if(num==2279)
+                    console.log("结束了");
+                if (num < 2281)
+                    get(num + 5);
+            }
+            else
+            {
+            let max=parseInt(doc.page);
+            let page=1;
+            function getpage(page){
+                axios.get(doc.URL+"/user-reviews?page="+page)
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     
@@ -2469,7 +2758,7 @@ app.get("/getmusicmoreuser",(req,res)=>{
                                 console.log("结束了");
                             else if (page<max-1)
                                 getpage(page+1);
-                            else if (num < 2283&&num!=2279)
+                            else if (num < 2281&&num!=2279)
                                 get(num + 5);
                         
                       })
@@ -2511,7 +2800,8 @@ app.get("/getmovieuser",(req,res)=>{
            
             console.log("开始操作：" + num + doc.product_title);
        
-            axios.get('https://www.metacritic.com/movie/' +doc.link+'/user-reviews')
+            if (doc.URL&&doc.URL.match(/http/g))
+            axios.get(doc.URL+'/user-reviews')
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     let userscore=$(".simple_summary").find(".metascore_w").text();
@@ -2562,6 +2852,11 @@ app.get("/getmovieuser",(req,res)=>{
                             get(num);
                         }, 5000);
                 });
+                else{
+                    if (num < 6153)
+                    get(num + 5);
+                }
+                
           
             
         })
@@ -2580,7 +2875,7 @@ app.get("/getmoviemoreuser",(req,res)=>{
         mongo.Movie.findOne({}).skip(num).exec((err, doc) => {
            
             
-            if (!doc.page)
+            if (!doc.page||!doc.URL||!doc.URL.match(/http/g))
             {
                 if (num==100)
                     get(num+10);
@@ -2594,7 +2889,7 @@ app.get("/getmoviemoreuser",(req,res)=>{
          
             function getpage(page){
             console.log("开始操作：" + num + doc.product_title+page);
-            axios.get('https://www.metacritic.com/movie/' +doc.link+'/user-reviews?page='+page)
+            axios.get(doc.URL+'/user-reviews?page='+page)
                 .then(function (res) {
                     $ = cheerio.load(res.data);
                     
